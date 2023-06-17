@@ -1,7 +1,6 @@
-// import ErrorHandler from "../middleware/error.js";
 import Task from "../models/task.js";
 
-const newTask = async (req, res, next) => {
+export const createTask = async (req, res, next) => {
   try {
     const { title, description } = req.body;
     await Task.create({
@@ -9,7 +8,6 @@ const newTask = async (req, res, next) => {
       description,
       user: req.user
     });
-
     res.status(201).json({
       success: true,
       message: "Task added succefully"
@@ -22,7 +20,7 @@ const newTask = async (req, res, next) => {
   }
 }
 
-const getTask = async (req, res, next) => {
+export const getTask = async (req, res) => {
   try {
     const userid = req.user._id
     const task = await Task.find({ user: userid });
@@ -39,20 +37,18 @@ const getTask = async (req, res, next) => {
   }
 }
 
-const updateTask = async (req, res, next) => {
+export const updateTask = async (req, res) => {
   try {
     const id = req.params.id;
     const task = await Task.findByIdAndUpdate(id, { $set: req.body }, { new: true })
     if (!task) 
     throw new Error("Task not found")
-    // return next(new ErrorHandler("Task not found", 404));
     res.status(201).json({
       success: true,
       message: "Updated task successfully",
     })
 
   } catch (error) {
-    // next(error)
     res.status(404).json({
       success: false,
       message : "No Task Found to update"
@@ -61,15 +57,13 @@ const updateTask = async (req, res, next) => {
 
 }
 
-const deleteTask = async (req, res, next) => {
+export const deleteTask = async (req, res, next) => {
   try {
     const task = await Task.findById(req.params.id);
-
     if (!task) 
-    throw new Error("Task not found")
-    // return next(new ErrorHandler("Task not found", 404));
-    await task.deleteOne();
+    throw new Error("Task not found");
 
+    await task.deleteOne();
     res.status(200).json({
       message: "Task Deleted!",
       success: true,
@@ -77,9 +71,7 @@ const deleteTask = async (req, res, next) => {
   } catch (error) {
     res.status(404).json({
       success: false,
-      message : "Task not Exist or created."
+      message : "Task not Exist."
     })
   }
 };
-
-export { newTask, getTask, updateTask, deleteTask }

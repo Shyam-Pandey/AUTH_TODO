@@ -6,7 +6,6 @@ const auth = async (req,res,next) =>{
     if(!token){
         return res.status(401).json({message:'Login first'});
     }
-
     const decode = jwt.verify(token,process.env.JWT_SECRET);
     req.user = await User.findById(decode._id);
     next()

@@ -2,11 +2,11 @@ import User from "../models/userdb.js";
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
 
-const home = (req, res) => {
+export const home = (req, res) => {
     res.send("Api is Working");
 }
 
-const login = async (req, res, next) => {
+export const login = async (req, res) => {
     try {
         const { email, password } = req.body;
         let user = await User.findOne({ email }).select("+password");
@@ -20,7 +20,6 @@ const login = async (req, res, next) => {
             throw new Error("Incorrect email or password")
             // return next(new ErrorHandler("Incorrect email or password", 404))
         }
-
         const token = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
         return res.status(201).cookie("token", token, {
             httpOnly: true,
@@ -37,11 +36,9 @@ const login = async (req, res, next) => {
             message: error.message
         })
     }
-
-
 }
 
-const register = async (req, res) => {
+export const register = async (req, res) => {
     try {
         const { name, email, password } = req.body;
         let user = await User.findOne({ email });
@@ -76,7 +73,7 @@ const register = async (req, res) => {
     }
 }
 
-const getAllUser = async (req, res) => {
+export const getAllUser = async (req, res) => {
     const users = await User.find({});
     return res.status(200).json({
         success: true,
@@ -84,15 +81,14 @@ const getAllUser = async (req, res) => {
     });
 }
 
-
-const getMyProfile = (req, res) => {
+export const getMyProfile = (req, res) => {
     return res.status(200).json({
         success: true,
         user: req.user
     });
 }
 
-const logout = (req, res) => {
+export const logout = (req, res) => {
     res.status(200).
     cookie("token", "", {
         expires: new Date(Date.now()),
@@ -104,4 +100,4 @@ const logout = (req, res) => {
     });
 }
 
-export { home, login, register, getAllUser, getMyProfile, logout }
+// export { home, login, register, getAllUser, getMyProfile, logout }
