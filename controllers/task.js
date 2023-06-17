@@ -43,7 +43,9 @@ const updateTask = async (req, res, next) => {
   try {
     const id = req.params.id;
     const task = await Task.findByIdAndUpdate(id, { $set: req.body }, { new: true })
-    if (!task) return next(new ErrorHandler("Task not found", 404));
+    if (!task) 
+    throw new Error("Task not found")
+    // return next(new ErrorHandler("Task not found", 404));
     res.status(201).json({
       success: true,
       message: "Updated task successfully",
@@ -63,7 +65,9 @@ const deleteTask = async (req, res, next) => {
   try {
     const task = await Task.findById(req.params.id);
 
-    if (!task) return next(new ErrorHandler("Task not found", 404));
+    if (!task) 
+    throw new Error("Task not found")
+    // return next(new ErrorHandler("Task not found", 404));
     await task.deleteOne();
 
     res.status(200).json({

@@ -8,11 +8,11 @@ const home = (req, res) => {
 
 const login = async (req, res, next) => {
     try {
-
         const { email, password } = req.body;
         let user = await User.findOne({ email }).select("+password");
         if (!user) {
-            return next(new ErrorHandler("Incorrect email or password", 404))
+           throw new Error("Incorrect email or password")
+            // next(new ErrorHandler("Incorrect email or password", 404))
         }
 
         let isMatch = await bcrypt.compare(password, user.password);
@@ -31,7 +31,10 @@ const login = async (req, res, next) => {
             message: `Welcome Back ${""} ${user.name}`
         })
     } catch (error) {
-        next(error)
+        res.status(400).json({
+            success: false,
+            message: error.message
+        })
     }
 
 
@@ -42,7 +45,8 @@ const register = async (req, res) => {
         const { name, email, password } = req.body;
         let user = await User.findOne({ email });
         if (user) {
-            return next(new ErrorHandler("User already exists", 404))
+            throw new Error("User already exists")
+            // return next(new ErrorHandler("User already exists", 404))
         }
 
         const hashPassword = await bcrypt.hash(password, 10)
@@ -64,7 +68,10 @@ const register = async (req, res) => {
         });
 
     } catch (error) {
-
+        res.status(400).json({
+            success: false,
+            message: error.message
+        })
     }
 }
 
